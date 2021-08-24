@@ -8,7 +8,10 @@ const dns = require('dns');
 
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true})
 
-const urlSchema = new mongoose.Schema({ url: String })
+const urlSchema = new mongoose.Schema({
+  url: String,
+  idx: Number
+})
 const UrlModel = mongoose.model('UrlModel', urlSchema)
 
 // Basic Configuration
@@ -45,33 +48,38 @@ app.post('/api/shorturl', function(req, res, next) {
   dns.lookup(hostName, function(err) {
     if (err) return next(new Error('Hostname not found: ' + hostName));
 
-    UrlModel.findOne({
-      url: href
-    }, function(err, result) {
-
+    UrlModel.estimatedDocumentCount(function(err, count) {
       if (err) return next(err);
 
-      if (result) {
-        res.json({
-          original_url: result.url,
-          short_url: result._id
-        })
+      UrlModel.findOne({
+        url: href
+      }, function(err, result) {
 
-      } else {
-        
-        const urlDoc = new UrlModel()
-        urlDoc.url = href
+        if (err) return next(err);
 
-        urlDoc.save(function(err, result) {
-
-          if (err) return next(err);
-
+        if (result) {
           res.json({
             original_url: result.url,
-            short_url: result._id
+            short_url: result.idx
           })
-        })
-      }
+
+        } else {
+
+          const urlDoc = new UrlModel()
+          urlDoc.url = href
+          urlDoc.idx = count + 1
+
+          urlDoc.save(function(err, result) {
+
+            if (err) return next(err);
+
+            res.json({
+              original_url: result.url,
+              short_url: count + 1
+            })
+          })
+        }
+      })
     })
   })
 })
