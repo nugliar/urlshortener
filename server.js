@@ -45,8 +45,13 @@ app.post('/api/shorturl', function(req, res, next) {
   const pathName = urlData.pathname || ''
   const href = [hostName, ...pathName.split('/').filter(i => i)].join('/')
 
+  console.log('bla');
+
   dns.lookup(hostName, function(err) {
-    if (err) return next(new Error('Hostname not found: ' + hostName));
+
+    if (err) {
+      return next(new Error('invalid url'));
+    }
 
     UrlModel.estimatedDocumentCount(function(err, count) {
       if (err) return next(err);
@@ -88,8 +93,7 @@ app.use(function(err, req, res, next) {
   if (err) {
     res
       .status(err.status || 500)
-      .type('txt')
-      .send(err.message || 'Server Error')
+      .json({error: err.message || 'Server Error'})
   }
 })
 
