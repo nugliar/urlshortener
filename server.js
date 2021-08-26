@@ -40,16 +40,22 @@ app.get('/api/clear', function(req, res) {
 })
 
 app.post('/api/shorturl', function(req, res, cb) {
-  const urlData = new URL(req.body.url)
+  let urlData;
+
+  try {
+    urlData = new URL(req.body.url)
+  } catch (err) {
+    return cb(new Error('invalid url', {cause: err}));
+  }
+
   const hostName = urlData.hostname || ''
   const pathName = urlData.pathname || ''
   const href = [hostName, ...pathName.split('/').filter(i => i)].join('/')
 
-  // dns.lookup(hostName, function(err) {
-
-    // if (err) {
-    //   return cb(new Error('invalid url', {cause: err}));
-    // }
+  dns.lookup(hostName, function(err) {
+    if (err) {
+      return cb(new Error('invalid url', {cause: err}));
+    }
 
     UrlModel.estimatedDocumentCount(function(err, count) {
       if (err) return cb(err);
@@ -84,7 +90,7 @@ app.post('/api/shorturl', function(req, res, cb) {
         }
       })
     })
-  // })
+  })
 })
 
 app.use(function(err, req, res, next) {
@@ -93,7 +99,7 @@ app.use(function(err, req, res, next) {
     res
       .status(err.status || 500)
       .send({
-        error: err || 'Server Error',
+        error: err.message || 'Server Error',
       })
   }
 })
