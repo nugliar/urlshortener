@@ -39,28 +39,26 @@ app.get('/api/clear', function(req, res) {
   })
 })
 
-app.post('/api/shorturl', function(req, res, next) {
+app.post('/api/shorturl', function(req, res, cb) {
   const urlData = new URL(req.body.url)
   const hostName = urlData.hostname || ''
   const pathName = urlData.pathname || ''
   const href = [hostName, ...pathName.split('/').filter(i => i)].join('/')
 
-  console.log('bla');
+  // dns.lookup(hostName, function(err) {
 
-  dns.lookup(hostName, function(err) {
-
-    if (err) {
-      return next(new Error('invalid url'));
-    }
+    // if (err) {
+    //   return cb(new Error('invalid url', {cause: err}));
+    // }
 
     UrlModel.estimatedDocumentCount(function(err, count) {
-      if (err) return next(err);
+      if (err) return cb(err);
 
       UrlModel.findOne({
         url: href
       }, function(err, result) {
 
-        if (err) return next(err);
+        if (err) return cb(err);
 
         if (result) {
           res.json({
@@ -76,7 +74,7 @@ app.post('/api/shorturl', function(req, res, next) {
 
           urlDoc.save(function(err, result) {
 
-            if (err) return next(err);
+            if (err) return cb(err);
 
             res.json({
               original_url: result.url,
@@ -86,14 +84,17 @@ app.post('/api/shorturl', function(req, res, next) {
         }
       })
     })
-  })
+  // })
 })
 
 app.use(function(err, req, res, next) {
+
   if (err) {
     res
       .status(err.status || 500)
-      .json({error: err.message || 'Server Error'})
+      .send({
+        error: err || 'Server Error',
+      })
   }
 })
 
