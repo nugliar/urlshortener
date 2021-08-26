@@ -10,6 +10,7 @@ mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopolo
 
 const urlSchema = new mongoose.Schema({
   url: String,
+  cleanUrl: String,
   idx: Number
 })
 const UrlModel = mongoose.model('UrlModel', urlSchema)
@@ -61,7 +62,7 @@ app.post('/api/shorturl', function(req, res, cb) {
       if (err) return cb(err);
 
       UrlModel.findOne({
-        url: href
+        cleanUrl: href
       }, function(err, result) {
 
         if (err) return cb(err);
@@ -74,9 +75,10 @@ app.post('/api/shorturl', function(req, res, cb) {
 
         } else {
 
-          const urlDoc = new UrlModel()
-          urlDoc.url = href
-          urlDoc.idx = count + 1
+          const urlDoc = new UrlModel();
+          urlDoc.url = req.body.url;
+          urlDoc.cleanUrl = href;
+          urlDoc.idx = count + 1;
 
           urlDoc.save(function(err, result) {
 
@@ -98,7 +100,7 @@ app.use(function(err, req, res, next) {
   if (err) {
     res
       .status(err.status || 500)
-      .send({
+      .json({
         error: err.message || 'Server Error',
       })
   }
