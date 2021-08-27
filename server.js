@@ -41,8 +41,8 @@ app.get('/api/clear', function(req, res) {
 })
 
 app.get('/api/shorturl/:id', function(req, res, cb) {
-  console.log(req.params.id);
-  
+  // console.log(req.params.id);
+
   UrlModel.findOne({
     idx: req.params.id
   }, function(err, result) {
@@ -60,7 +60,7 @@ app.get('/api/shorturl/:id', function(req, res, cb) {
 app.post('/api/shorturl', function(req, res, cb) {
   let urlData;
 
-  console.log(req.body.url);
+  // console.log(req.body.url);
 
   try {
     urlData = new URL(req.body.url)
@@ -128,6 +128,12 @@ app.use(function(err, req, res, next) {
         error: err.message || 'Server Error',
       })
   }
+})
+
+app.use(function(req, res, next) {
+  res
+    .status(404)
+    .send('Not found');
 })
 
 app.listen(port, function() {
