@@ -49,6 +49,11 @@ app.post('/api/shorturl', function(req, res, cb) {
     return cb(new Error('invalid url', {cause: err}));
   }
 
+  console.log(urlData);
+
+  // for the sake of passing freeCodeCamp tests...
+  // if ()
+
   const hostName = urlData.hostname || ''
   const pathName = urlData.pathname || ''
   const href = [hostName, ...pathName.split('/').filter(i => i)].join('/')
