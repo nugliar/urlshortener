@@ -58,6 +58,8 @@ app.get('/api/shorturl/:id', function(req, res, cb) {
 app.post('/api/shorturl', function(req, res, cb) {
   let urlData;
 
+  console.log(req.body.url);
+
   try {
     urlData = new URL(req.body.url)
     const protocol = urlData.protocol;
@@ -68,11 +70,6 @@ app.post('/api/shorturl', function(req, res, cb) {
   } catch (err) {
     return cb(new Error('invalid url', {cause: err}));
   }
-
-  console.log(urlData);
-
-  // for the sake of passing freeCodeCamp tests...
-  // if ()
 
   const hostName = urlData.hostname || ''
   const pathName = urlData.pathname || ''
