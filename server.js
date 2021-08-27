@@ -41,6 +41,8 @@ app.get('/api/clear', function(req, res) {
 })
 
 app.get('/api/shorturl/:id', function(req, res, cb) {
+  console.log(req.params.id);
+  
   UrlModel.findOne({
     idx: req.params.id
   }, function(err, result) {
