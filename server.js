@@ -40,6 +40,21 @@ app.get('/api/clear', function(req, res) {
   })
 })
 
+app.get('/api/shorturl/:id', function(req, res, cb) {
+  UrlModel.findOne({
+    idx: req.params.id
+  }, function(err, result) {
+    if (err) {
+      return next(err);
+    }
+    if (result) {
+      res.redirect(result.url);
+    } else {
+      return cb(new Error('No short URL found for the given input'));
+    }
+  })
+})
+
 app.post('/api/shorturl', function(req, res, cb) {
   let urlData;
 
