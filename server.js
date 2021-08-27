@@ -77,7 +77,7 @@ app.post('/api/shorturl', function(req, res, cb) {
 
   dns.lookup(hostName, function(err) {
     if (err) {
-      return cb(new Error('invalid url', {cause: err}));
+      return cb(new Error('invalid url'));
     }
 
     UrlModel.estimatedDocumentCount(function(err, count) {
