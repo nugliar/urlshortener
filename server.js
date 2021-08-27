@@ -73,9 +73,10 @@ app.post('/api/shorturl', function(req, res, cb) {
     return cb(new Error('invalid url', {cause: err}));
   }
 
-  const hostName = urlData.hostname || ''
-  const pathName = urlData.pathname || ''
-  const href = [hostName, ...pathName.split('/').filter(i => i)].join('/')
+  const hostName = urlData.hostname || '';
+  const pathName = urlData.pathname || '';
+  const protocol = urlData.protocol || '';
+  const href = [protocol + '/', hostName, ...pathName.split('/').filter(i => i)].join('/');
 
   dns.lookup(hostName, function(err) {
     if (err) {
@@ -93,7 +94,7 @@ app.post('/api/shorturl', function(req, res, cb) {
 
         if (result) {
           res.json({
-            original_url: result.url,
+            original_url: result.cleanUrl,
             short_url: result.idx
           })
 
@@ -109,7 +110,7 @@ app.post('/api/shorturl', function(req, res, cb) {
             if (err) return cb(err);
 
             res.json({
-              original_url: result.url,
+              original_url: result.cleanUrl,
               short_url: count + 1
             })
           })
