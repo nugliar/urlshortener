@@ -128,7 +128,7 @@ app.use(function(err, req, res, next) {
 
   if (err) {
     res
-      .status(err.status || 500)
+      // .status(err.status || 500)
       .json({
         error: err.message || 'Server Error',
       })
