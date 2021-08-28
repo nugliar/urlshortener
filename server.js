@@ -70,7 +70,7 @@ app.post('/api/shorturl', function(req, res, cb) {
       throw new Error();
     }
   } catch (err) {
-    return cb(new Error('invalid url', {cause: err}));
+    return cb(new Error('invalid url'));
   }
 
   const hostName = urlData.hostname || '';
