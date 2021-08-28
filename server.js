@@ -76,7 +76,14 @@ app.post('/api/shorturl', function(req, res, cb) {
   const hostName = urlData.hostname || '';
   const pathName = urlData.pathname || '';
   const protocol = urlData.protocol || '';
-  const href = [protocol + '/', hostName, ...pathName.split('/').filter(i => i)].join('/');
+  const href = [
+    protocol + '/',
+    hostName,
+    ...pathName.split('/'),
+    urlData.search
+  ]
+    .filter(i => i)
+    .join('/');
 
   dns.lookup(hostName, function(err) {
     if (err) {
