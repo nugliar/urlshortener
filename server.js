@@ -59,8 +59,6 @@ app.get('/api/shorturl/:id', function(req, res, cb) {
 app.post('/api/shorturl', function(req, res, cb) {
   let urlData;
 
-  console.log(req.body.url);
-
   try {
     urlData = new URL(req.body.url)
     const protocol = urlData.protocol;
@@ -69,7 +67,7 @@ app.post('/api/shorturl', function(req, res, cb) {
       throw new Error();
     }
   } catch (err) {
-    return cb(new Error('invalid url'));
+    return cb(new Error('Invalid URL'));
   }
 
   const hostName = urlData.hostname || '';
@@ -86,7 +84,7 @@ app.post('/api/shorturl', function(req, res, cb) {
 
   dns.lookup(hostName, function(err) {
     if (err) {
-      return cb(new Error('invalid url'));
+      return cb(new Error('Invalid URL'));
     }
 
     UrlModel.estimatedDocumentCount(function(err, count) {
@@ -131,7 +129,7 @@ app.use(function(err, req, res, next) {
   if (err) {
     res
       .status(err.status || 500)
-      .send({
+      .json({
         error: err.message || 'Server Error',
       })
   }
