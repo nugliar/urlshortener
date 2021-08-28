@@ -41,7 +41,7 @@ app.get('/api/clear', function(req, res) {
 })
 
 app.get('/api/shorturl/:id', function(req, res, cb) {
-  // console.log(req.params.id);
+  console.log(req.params.id);
 
   UrlModel.findOne({
     idx: req.params.id
@@ -60,7 +60,7 @@ app.get('/api/shorturl/:id', function(req, res, cb) {
 app.post('/api/shorturl', function(req, res, cb) {
   let urlData;
 
-  // console.log(req.body.url);
+  console.log(req.body.url);
 
   try {
     urlData = new URL(req.body.url)
@@ -93,6 +93,10 @@ app.post('/api/shorturl', function(req, res, cb) {
         if (err) return cb(err);
 
         if (result) {
+          console.log({
+            original_url: result.cleanUrl,
+            short_url: result.idx
+          });
           res.json({
             original_url: result.cleanUrl,
             short_url: result.idx
@@ -109,6 +113,10 @@ app.post('/api/shorturl', function(req, res, cb) {
 
             if (err) return cb(err);
 
+            console.log({
+              original_url: result.cleanUrl,
+              short_url: count + 1
+            });
             res.json({
               original_url: result.cleanUrl,
               short_url: count + 1
@@ -123,6 +131,7 @@ app.post('/api/shorturl', function(req, res, cb) {
 app.use(function(err, req, res, next) {
 
   if (err) {
+    console.log(err.status, err.message);
     res
       .status(err.status || 500)
       .json({
@@ -132,6 +141,7 @@ app.use(function(err, req, res, next) {
 })
 
 app.use(function(req, res, next) {
+  console.log('not found');
   res
     .status(404)
     .send('Not found');
